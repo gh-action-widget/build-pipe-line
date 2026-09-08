@@ -1,0 +1,22 @@
+name: Build Pipe Line
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-pipe-line:
+    name: Build Pipe Line
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build pipe line
+        run: |
+          echo "Build Pipe Line is running"
+          test -f README.md
