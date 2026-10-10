@@ -13,7 +13,7 @@ permissions:
 jobs:
   build-pipe-line:
     name: Build Pipe Line
-    runs-on: ubuntu-latest
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && vars.HETZNER1_LINUX_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - name: Build pipe line

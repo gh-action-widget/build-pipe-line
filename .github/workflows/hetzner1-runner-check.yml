@@ -1,0 +1,30 @@
+name: Hetzner1 runner check
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+permissions:
+  contents: read
+jobs:
+  connectivity:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: hetzner1-build-pipe-line
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify architecture, tools and isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = aarch64
+          git --version
+          python3 --version
+          curl --fail --silent --show-error --max-time 30 https://api.github.com/meta > /dev/null
+          test ! -e /var/run/secrets/kubernetes.io/serviceaccount/token
+          test ! -S /var/run/docker.sock
+          if curl --silent --insecure --connect-timeout 3 --max-time 5 https://kubernetes.default.svc/version > /dev/null; then
+            echo 'Unexpected Kubernetes API network access' >&2
+            exit 1
+          fi
